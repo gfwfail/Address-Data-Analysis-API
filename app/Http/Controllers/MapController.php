@@ -97,7 +97,7 @@ class MapController extends Controller
 
     function getTransits($address){
         $location = MapSerivce::geocoding($address);
-        $transits =  json_decode(MapSerivce::nearby($location,'transit_station',20000),true);
+        $transits =  json_decode(MapSerivce::nearby($location,'transit_station',8000),true);
         $transit_details = [];
 
         foreach($transits['results'] as $transit) {
