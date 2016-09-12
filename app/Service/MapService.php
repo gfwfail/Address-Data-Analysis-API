@@ -82,7 +82,7 @@ class MapService
 
     protected function request( $apiUrl, $query=[] ){
 
-       return Cache::remember(md5($apiUrl.http_build_query($query)),
+       return Cache::remember(md5('1'.$apiUrl.http_build_query($query)),
                CACHE_MINUTES,
                function() use ($apiUrl,$query)
                {
@@ -98,6 +98,11 @@ class MapService
                     if( $output === false ){
                         throw new \ErrorException( curl_error($ch) );
                     }
+
+                   if ($status=json_decode($output,true)['status']!='OK'){
+                       throw new \ErrorException($status );
+
+                   }
 
                     curl_close($ch);
                     return $output;
