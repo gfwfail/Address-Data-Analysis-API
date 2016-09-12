@@ -70,16 +70,19 @@ Route::get('/map', function () {
 
     $trams =  json_decode(MapSerivce::nearby($location,'light_rail_station',1500),true);
     $tram_details = [];
+
         foreach($trams['results'] as $tram) {
               $tram_detail= json_decode( MapSerivce::detail( $tram['place_id'] ),true);
+            $walking_time = json_decode(  MapSerivce::distance('walking',$location,
+                implode(',',$tram['geometry']['location']) ),true)['rows'][0]['elements'][0]['duration']['value'];
 
-            $tram_detail['linear_distance']= MapSerivce::linearDistance($location,implode(',',$tram['geometry']['location']));
+            $tram_detail['walking_time']= $walking_time;
             $tram_details[] = $tram_detail;
 
 
         }
 
-    dd($tram_detail);
+    dd($tram_details);
 
 
     // dd($hospital_details);
