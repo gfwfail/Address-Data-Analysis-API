@@ -99,7 +99,7 @@ class MapController extends Controller
         set_time_limit(10000000);
 
         $location = MapSerivce::geocoding($address);
-        $transits =  json_decode(MapSerivce::nearby($location,'train_station|subway_station|light_rail_station',3000),true);
+        $transits =  json_decode(MapSerivce::nearby($location,'train_station|subway_station|light_rail_station',1000),true);
 
         $transit_details = [];
 
