@@ -52,8 +52,7 @@ class MapService
         $options = [
             'location'=>$location,
             'types'=>$types,
-            'radius'=>$radius,
-            'rankby'=>'distance'
+            'radius'=>$radius
         ];
 
         return $this->request('https://maps.googleapis.com/maps/api/place/radarsearch/json',$options);
@@ -79,15 +78,38 @@ class MapService
         return $this->request('https://maps.googleapis.com/maps/api/place/details/json',$options);
 
     }
+    public function request($apiUrl,$query) {
+                    $query['key'] = $this->apiKey();
+                             $ch = curl_init( $apiUrl.'?'.http_build_query($query) );
 
-    protected function request( $apiUrl, $query=[] ){
+                            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                            $output = curl_exec($ch);
+
+
+                            if( $output === false ){
+                                throw new \ErrorException( curl_error($ch) );
+                            }
+
+                            if ($status=json_decode($output,true)['status']!='OK'){
+                                throw new \ErrorException($status );
+
+                            }
+
+        curl_close($ch);
+
+        return $output;
+    }
+
+    protected function request2( $apiUrl, $query=[] ){
 
        return Cache::remember(md5('1'.$apiUrl.http_build_query($query)),
                CACHE_MINUTES,
                function() use ($apiUrl,$query)
                {
                     $query['key'] = $this->apiKey();
-                    $ch = curl_init( $apiUrl.'?'.http_build_query($query) );
+                     $ch = curl_init( $apiUrl.'?'.http_build_query($query) );
 
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

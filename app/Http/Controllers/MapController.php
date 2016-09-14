@@ -96,14 +96,18 @@ class MapController extends Controller
     }
 
     function getTransits($address){
+        set_time_limit(10000000);
+
         $location = MapSerivce::geocoding($address);
-        $transits =  json_decode(MapSerivce::nearby($location,'transit_station',8000),true);
+        $transits =  json_decode(MapSerivce::nearby($location,'train_station|subway_station|light_rail_station',3000),true);
+
         $transit_details = [];
 
         foreach($transits['results'] as $transit) {
             $api_data= json_decode( MapSerivce::detail( $transit['place_id'] ),true);
            // dd($api_data);
             $transit_detail = [];
+            $transit_detail['api'] = $api_data;
             $transit_detail['linear_distance']= MapSerivce::linearDistance($location,implode(',',$transit['geometry']['location']));
             $transit_detail['types']=implode('|',$api_data['result']['types']);
 
